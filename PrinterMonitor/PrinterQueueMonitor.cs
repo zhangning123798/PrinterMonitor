@@ -49,6 +49,7 @@ namespace UcAsp.Net.PrinterMonitor
         public PrinterQueueMonitor()
         {
             ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Printer");
+
             foreach (var obj in searcher.Get())
             {
 
@@ -216,9 +217,13 @@ namespace UcAsp.Net.PrinterMonitor
                 {
                     printerModel.Paused = true;
                 }
+                string _spoolerNameTmp = _spoolerName;
+                if (_spoolerName.Contains("\\"))
+                    _spoolerNameTmp = _spoolerName.Replace("\\", "\\\\");
+
                 string wmiQuery = "Select * From __InstanceModificationEvent Within 1 " +
-                "Where TargetInstance ISA 'Win32_Printer' AND TargetInstance.Name ='" + _spoolerName + "'";
-                ManagementEventWatcher watcher = new ManagementEventWatcher(new ManagementScope("\\root\\CIMV2"), new EventQuery(wmiQuery));
+                "Where TargetInstance ISA 'Win32_Printer' AND TargetInstance.Name ='" + _spoolerNameTmp + "'";
+                ManagementEventWatcher watcher = new ManagementEventWatcher(new ManagementScope("root\\CIMV2"), new EventQuery(wmiQuery));
                 watcher.EventArrived += new EventArrivedEventHandler(WmiEventHandler);
                 watcher.Start();
                 IntPtr _printerHandle = IntPtr.Zero;
@@ -235,8 +240,16 @@ namespace UcAsp.Net.PrinterMonitor
                     //Now, let us wait for change notification from the printer queue....
                     printerModel.WaitHandle = ThreadPool.RegisterWaitForSingleObject(printerModel.MrEvent, new WaitOrTimerCallback(PrinterNotifyWaitCallback), printerModel.MrEvent, -1, true);
                 }
+                if (_spoolerName.Contains("\\"))
+                {
+                    //printerModel.Spooler = new PrintQueue(new PrintServer(_spoolerName), "111");
+                    PrintServer printServer = new PrintServer(_spoolerName);
+                    var ss = printServer.GetPrintQueues(new[] { EnumeratedPrintQueueTypes.Local, EnumeratedPrintQueueTypes.Connections }).First();
+                    printerModel.Spooler = ss;
+                }
+                else
+                    printerModel.Spooler = new PrintQueue(new PrintServer(), _spoolerName);
 
-                printerModel.Spooler = new PrintQueue(new PrintServer(), _spoolerName);
                 foreach (PrintSystemJobInfo psi in printerModel.Spooler.GetPrintJobInfoCollection())
                 {
                     objJobDict[psi.JobIdentifier] = psi.Name;
