@@ -97,7 +97,7 @@ namespace UcAsp.Net.PrinterMonitor
             JOB_STATUS_PAUSED = 0x00000001,
             JOB_STATUS_ERROR = 0x00000002,
             JOB_STATUS_DELETING = 0x00000004,
-            JOB_STATUS_SPOOLING = 0x00000008,
+            JOB_STATUS_SPOOLING = 0x00000008,//假脱机
             JOB_STATUS_PRINTING = 0x00000010,
             JOB_STATUS_OFFLINE = 0x00000020,
             JOB_STATUS_PAPEROUT = 0x00000040,
@@ -108,7 +108,7 @@ namespace UcAsp.Net.PrinterMonitor
             JOB_STATUS_RESTART = 0x00000800,
             JOB_STATUS_COMPLETE = 0x00001000,
             JOB_STATUS_RETAINED = 0x00002000,
-            JOB_STATUS_RENDERING_LOCALLY = 0x00004000,
+            JOB_STATUS_RENDERING_LOCALLY = 0x00004000,//本地渲染
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
@@ -257,29 +257,29 @@ namespace UcAsp.Net.PrinterMonitor
         {
             PRINTER_STATUS_PAUSED = 1,
             PRINTER_STATUS_ERROR = 2,
-            PRINTER_STATUS_PENDING_DELETION = 4,
-            PRINTER_STATUS_PAPER_JAM = 8,
-            PRINTER_STATUS_PAPER_OUT = 0x10,
-            PRINTER_STATUS_MANUAL_FEED = 0x20,
-            PRINTER_STATUS_PAPER_PROBLEM = 0x40,
+            PRINTER_STATUS_PENDING_DELETION = 4,//由于客户端调用 RpcDeletePrinter，打印机正在被删除。 不能在该打印机的现有打印机对象上提交新作业。
+            PRINTER_STATUS_PAPER_JAM = 8,//纸张卡在打印机中。
+            PRINTER_STATUS_PAPER_OUT = 0x10,//打印机缺纸。
+            PRINTER_STATUS_MANUAL_FEED = 0x20,//打印机处于手动进纸状态。
+            PRINTER_STATUS_PAPER_PROBLEM = 0x40,//打印机存在未指定的纸张问题。
             PRINTER_STATUS_OFFLINE = 0x80,
             PRINTER_STATUS_IO_ACTIVE = 0x100,
-            PRINTER_STATUS_BUSY = 0x200,
-            PRINTER_STATUS_PRINTING = 0x400,
-            PRINTER_STATUS_OUTPUT_BIN_FULL = 0x800,
+            PRINTER_STATUS_BUSY = 0x200,//The printer is busy.
+            PRINTER_STATUS_PRINTING = 0x400,//The printer is printing.
+            PRINTER_STATUS_OUTPUT_BIN_FULL = 0x800,//打印机的出纸槽已满。
             PRINTER_STATUS_NOT_AVAILABLE = 0x1000,
             PRINTER_STATUS_WAITING = 0x2000,
-            PRINTER_STATUS_PROCESSING = 0x4000,
+            PRINTER_STATUS_PROCESSING = 0x4000,//打印机正在处理打印作业。
             PRINTER_STATUS_INITIALIZING = 0x8000,
-            PRINTER_STATUS_WARMING_UP = 0x10000,
-            PRINTER_STATUS_TONER_LOW = 0x20000,
+            PRINTER_STATUS_WARMING_UP = 0x10000,//The printer is low on toner.
+            PRINTER_STATUS_TONER_LOW = 0x20000,//打印机碳粉不足。
             PRINTER_STATUS_NO_TONER = 0x40000,
-            PRINTER_STATUS_PAGE_PUNT = 0x80000,
-            PRINTER_STATUS_USER_INTERVENTION = 0x100000,
+            PRINTER_STATUS_PAGE_PUNT = 0x80000,//打印机无法打印当前页面。
+            PRINTER_STATUS_USER_INTERVENTION = 0x100000,//打印机出现错误，需要用户执行某些操作。
             PRINTER_STATUS_OUT_OF_MEMORY = 0x200000,
-            PRINTER_STATUS_DOOR_OPEN = 0x400000,
+            PRINTER_STATUS_DOOR_OPEN = 0x400000,//The printer door is open.
             PRINTER_STATUS_SERVER_UNKNOWN = 0x800000,
-            PRINTER_STATUS_POWER_SAVE = 0x1000000,
+            PRINTER_STATUS_POWER_SAVE = 0x1000000,//打印机处于省电模式。
         }
 
         [FlagsAttribute]
