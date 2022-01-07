@@ -8,6 +8,7 @@ using UcAsp.Net.PrinterMonitor;
 using System.Management;
 using System.Drawing.Printing;
 using System.Printing;
+using Newtonsoft.Json;
 
 namespace PrinterMonitor.Test
 {
@@ -15,15 +16,21 @@ namespace PrinterMonitor.Test
     {
         static void Main(string[] args)
         {
+            Random rd = new Random();
             GetPrintersWinSever();
             PrinterQueueMonitor printerMonitor = new PrinterQueueMonitor();
 
             printerMonitor.OnPrinterStatusChange += (o, e) => {
+                Console.WriteLine("打印状态变更：");
                 Console.WriteLine(o);
-                Console.WriteLine(e.WorkOffLine);
+                Console.WriteLine(JsonConvert.SerializeObject(e));
             };
             printerMonitor.OnJobStatusChange += (o, e) =>
             {
+                var bianhao = rd.Next();
+                Console.WriteLine("任务状态变更："+ bianhao);
+                Console.WriteLine(o);
+                Console.WriteLine(JsonConvert.SerializeObject(e));
                 Console.WriteLine(e.JobID + "." + e.JobName + "." + e.JobStatus + "." + e.JobTotalPages);
             };
             printerMonitor.Start();

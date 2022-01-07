@@ -131,11 +131,14 @@ namespace UcAsp.Net.PrinterMonitor
 
                     try
                     {
-                        printerModel.Spooler = new PrintQueue(new PrintServer(), printerModel.PrinterName);
-                        pji = printerModel.Spooler.GetJob(intJobID);
+                        
+                        //printerModel.Spooler = new PrintQueue(new PrintServer(), printerModel.PrinterName);
+
+                        GetPrinterModelSpooler(printerModel, printerModel.PrinterName);
+                        //pji = printerModel.Spooler.GetJob(intJobID);
                         if (!objJobDict.ContainsKey(intJobID))
-                            objJobDict[intJobID] = pji.Name;
-                        strJobName = pji.Name;
+                            objJobDict[intJobID] = Convert.ToString(printerModel.WaitHandle);
+                        strJobName = Convert.ToString(printerModel.WaitHandle);
 
 
                         GetJob(printerModel.PrinterHandle, (uint)intJobID, 2, IntPtr.Zero, 0, out uint needed);
@@ -150,7 +153,7 @@ namespace UcAsp.Net.PrinterMonitor
                             Marshal.FreeHGlobal(buffer);
                         }
                     }
-                    catch
+                    catch(Exception e)
                     {
                         pji = null;
                         objJobDict.TryGetValue(intJobID, out strJobName);
@@ -242,10 +245,7 @@ namespace UcAsp.Net.PrinterMonitor
                 }
                 if (_spoolerName.Contains("\\"))
                 {
-                    //printerModel.Spooler = new PrintQueue(new PrintServer(_spoolerName), "111");
-                    PrintServer printServer = new PrintServer(_spoolerName);
-                    var ss = printServer.GetPrintQueues(new[] { EnumeratedPrintQueueTypes.Local, EnumeratedPrintQueueTypes.Connections }).First();
-                    printerModel.Spooler = ss;
+                    GetPrinterModelSpooler(printerModel, _spoolerName);
                 }
                 else
                     printerModel.Spooler = new PrintQueue(new PrintServer(), _spoolerName);
@@ -255,6 +255,14 @@ namespace UcAsp.Net.PrinterMonitor
                     objJobDict[psi.JobIdentifier] = psi.Name;
                 }
             }
+        }
+
+        private void GetPrinterModelSpooler(PrinterModel printerModel,string _spoolerName)
+        {
+            PrintServer printServer = new PrintServer(_spoolerName);
+            var ssList = printServer.GetPrintQueues(new[] { EnumeratedPrintQueueTypes.Local, EnumeratedPrintQueueTypes.Connections });
+            var ss = ssList.First();
+            printerModel.Spooler = ss;
         }
     }
 }
